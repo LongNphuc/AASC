@@ -305,6 +305,7 @@ Mỗi tệp test nằm cạnh tệp code nó kiểm tra (đường dẫn tính t
 | `bitrix/parsers/install-payload.parser.spec.ts` | Nhận dạng `ONAPPINSTALL`, form `AUTH_ID`, `?code=`, dữ liệu thiếu |
 | `contacts/services/contacts.service.spec.ts` | Tạo đúng thứ tự; hủy contact khi bước ngân hàng lỗi; 404; sửa số điện thoại theo ID; gộp dữ liệu requisite vào danh sách |
 | `contacts/mappers/contact.mapper.spec.ts` | Ánh xạ trường thêm/sửa contact, địa chỉ Việt Nam, thứ tự họ tên |
+| `contacts/dto/create-contact.dto.spec.ts` | Thông báo validate: thiếu trường bắt buộc → "là bắt buộc", sai kiểu → "phải là chuỗi"; `PUT` không gửi tên vẫn hợp lệ |
 | `jotform/services/jotform.service.spec.ts` | Lưu nội dung form và tạo contact; trùng thì trả `10003` và không ghi DB; đồng thời chỉ tạo một contact; khác form `20004`; Bitrix24 lỗi `40003` |
 | `jotform/mappers/submission.mapper.spec.ts` | Ánh xạ ô văn bản, họ tên phức hợp, điện thoại `{full}`/`{area, phone}`; báo đủ lỗi |
 | `jotform/repositories/form-submission.repository.spec.ts` | SQLite thật: tạo đồng thời không trùng dòng, khóa uuid; lỗi rồi gửi lại thành công là hai dòng; `form_content` đọc lại đúng JSON |
@@ -318,8 +319,8 @@ E2E (`test/app.e2e-spec.ts`): `/health` không cần key; thiếu/sai key `401`;
 
 ```
 $ npm test
-Test Suites: 15 passed, 15 total
-Tests:       73 passed, 73 total
+Test Suites: 16 passed, 16 total
+Tests:       77 passed, 77 total
 
 $ npm run test:e2e
 Tests:       4 passed, 4 total
@@ -356,6 +357,40 @@ $ curl -s -X POST localhost:3000/webhook/jotform -F formID=111 -F submissionID=6
 {"statusCode":422,"error":"Invalid Submission","message":["Form 111 không được hỗ trợ"],"errorKbn":20004,...}
 ```
 
-Với Bitrix24 và Jotform thật:
+**Các ca validate và lỗi** (chạy với Bitrix24 và Jotform thật, 04/10/2026). Mỗi ca trả `statusCode`, `errorKbn` và `message` như sau:
 
-<!-- TODO: điền kết quả sau khi cài ứng dụng và gửi form thật -->
+| # | Request | Kết quả |
+|---|---|---|
+| 1 | `POST /contacts` `{"email":"a@b.com"}` (thiếu `name`) | `400 20001` "Tên là bắt buộc" |
+| 2 | `POST /contacts` `{"name":"   "}` | `400 20001` "Tên là bắt buộc" |
+| 3 | `POST /contacts` `{"name":123}` | `400 20001` "Tên phải là chuỗi" |
+| 4 | `POST /contacts` `{"name":"A","phone":"123"}` | `400 20001` "Số điện thoại không hợp lệ" |
+| 5 | `POST /contacts` `{"name":"A","email":"abc"}` | `400 20001` "Email không hợp lệ" |
+| 6 | `POST /contacts` `{"name":"A","website":"not a url"}` | `400 20001` "Website không hợp lệ" |
+| 7 | `POST /contacts` `{"name":"A","address":{"ward":5}}` | `400 20001` "address.ward: Phường/xã phải là chuỗi" |
+| 8 | `POST /contacts` `{"name":"A","bank":{"accountNumber":"0071000123456"}}` | `400 20001` "bank.bankName: Tên ngân hàng là bắt buộc" |
+| 9 | `POST /contacts` `{"name":"A","bank":{"bankName":"VCB","accountNumber":"12ab"}}` | `400 20001` "bank.accountNumber: Số tài khoản không hợp lệ (chỉ gồm 6-20 chữ số)" |
+| 10 | `POST /contacts` `{"name":"A","foo":1}` | `400 20001` "Trường \"foo\" không được hỗ trợ" |
+| 11 | `PUT /contacts/9` `{}` | `400 20001` "Không có trường nào để cập nhật" |
+| 12 | `GET /contacts/abc` | `400 20001` "ID contact phải là số nguyên dương" |
+| 13 | `GET /contacts/999999` | `404 20003` "Contact không tồn tại (ID 999999)" |
+| 14 | `GET /contacts?start=-1` | `400 20001` "start không được âm" |
+| 15 | `GET /contacts` không có `x-api-key` | `401 20002` "Thiếu hoặc sai API key (header x-api-key)" |
+| 16 | `POST /webhook/jotform` `-F formID=262753749396070` (thiếu `submissionID`) | `400 20001` "Thiếu hoặc sai submissionID" |
+| 17 | `POST /webhook/jotform` `-F formID=111 -F submissionID=1` | `422 20004` "Form 111 không được hỗ trợ" |
+| 18 | `POST /webhook/jotform` với `submissionID` không có thật | `502 30003` "Jotform từ chối truy cập (...): submission không tồn tại hoặc không thuộc tài khoản, hoặc JOTFORM_API_KEY sai/thiếu quyền" |
+
+Các ca 1-15 dùng header `-H "x-api-key: $API_KEY" -H 'content-type: application/json'`. Ca 18: Jotform API trả `401` cho cả key sai lẫn submission không tồn tại, nên thông báo nêu cả hai khả năng.
+
+**Luồng thành công với Bitrix24 và Jotform thật** (04/10/2026):
+
+| Bước | Kết quả |
+|---|---|
+| Gửi form Jotform | `POST /webhook/jotform` `200`, `statusKbn 10000`, tạo contact `9` trên Bitrix24 |
+| `POST /jotform/sync` | 3 submission: 2 tạo mới (contact `11`, `13`), 1 bỏ qua do trùng |
+| Cài lại ứng dụng cục bộ | `POST /install` `201`, dạng `event` (`ONAPPINSTALL`), lưu token cho `b24-4totiv.bitrix24.vn` |
+| `GET /bitrix/installation` | `memberId`, `domain`, `expiresInSeconds: 3466` |
+| `GET /bitrix/test-call` | `callBitrixAPI('crm.contact.list')` trả `total = 5` |
+| `POST /bitrix/token/refresh` | Làm mới thành công, `expiresInSeconds: 3600` |
+
+<!-- TODO: bổ sung kết quả CRUD /contacts (POST, GET, PUT, DELETE) sau khi chạy thật -->

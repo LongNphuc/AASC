@@ -257,6 +257,7 @@ contacts/
 │   └── contact.mapper.spec.ts              test: các hàm ánh xạ
 ├── dto/                                    Dữ liệu vào/ra và luật validate
 │   ├── create-contact.dto.ts               name (bắt buộc), phone (số VN), email, website, address, bank
+│   ├── create-contact.dto.spec.ts          test: thông báo validate (thiếu → "là bắt buộc", sai kiểu → "phải là chuỗi"); PUT không cần tên
 │   ├── update-contact.dto.ts               như trên, mọi trường tùy chọn
 │   ├── address.dto.ts                      street, ward, district, province
 │   ├── bank.dto.ts                         bankName, accountNumber (6-20 chữ số)

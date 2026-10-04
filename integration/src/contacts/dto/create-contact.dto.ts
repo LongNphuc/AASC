@@ -34,7 +34,7 @@ export class CreateContactDto {
   @Trim()
   @IsNotEmpty({ message: VALIDATION.REQUIRED(FIELD.NAME) })
   @MaxLength(NAME_MAX, { message: VALIDATION.MAX_LENGTH(FIELD.NAME, NAME_MAX) })
-  @IsString({ message: VALIDATION.MUST_BE_STRING(FIELD.NAME) })
+  @IsString({ message: VALIDATION.REQUIRED_STRING(FIELD.NAME) })
   name: string;
 
   @ApiPropertyOptional({

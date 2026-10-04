@@ -15,7 +15,7 @@ export class BankDto {
   @Trim()
   @IsNotEmpty({ message: VALIDATION.REQUIRED(FIELD.BANK_NAME) })
   @MaxLength(MAX, { message: VALIDATION.MAX_LENGTH(FIELD.BANK_NAME, MAX) })
-  @IsString({ message: VALIDATION.MUST_BE_STRING(FIELD.BANK_NAME) })
+  @IsString({ message: VALIDATION.REQUIRED_STRING(FIELD.BANK_NAME) })
   bankName: string;
 
   @ApiProperty({
@@ -26,6 +26,6 @@ export class BankDto {
     typeof value === 'string' ? value.replace(/[\s-]/g, '') : value,
   )
   @Matches(/^\d{6,20}$/, { message: VALIDATION.ACCOUNT_NUMBER_INVALID })
-  @IsString({ message: VALIDATION.MUST_BE_STRING(FIELD.ACCOUNT_NUMBER) })
+  @IsString({ message: VALIDATION.REQUIRED_STRING(FIELD.ACCOUNT_NUMBER) })
   accountNumber: string;
 }

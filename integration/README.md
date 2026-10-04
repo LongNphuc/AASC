@@ -27,7 +27,7 @@ npm ci && npm run start:dev       # khuyên dùng: log, DB nằm ngay trong logs
 ngrok http 3000 --url <PUBLIC_URL>
 ```
 
-Swagger: `http://localhost:3000/docs`. Kiểm thử: `npm test`, `npm run test:e2e` (73 unit test và 4 e2e test đều qua).
+Swagger: `http://localhost:3000/docs`. Kiểm thử: `npm test`, `npm run test:e2e` (77 unit test và 4 e2e test).
 
 ## Đối chiếu yêu cầu đề
 

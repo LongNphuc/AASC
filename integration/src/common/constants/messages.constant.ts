@@ -222,8 +222,10 @@ export const ERROR = {
     PUBLIC_URL_NOT_CONFIGURED: 'Chưa cấu hình PUBLIC_URL',
     /** Lỗi theo mã HTTP Jotform trả về; `path` là API đã gọi. */
     HTTP: {
+      // Jotform trả 401 cho cả key sai lẫn submission không tồn tại hoặc không
+      // thuộc tài khoản, nên thông báo nêu cả hai khả năng.
       AUTH: (path: string) =>
-        `Jotform từ chối JOTFORM_API_KEY hoặc key không có quyền với form này (${path})`,
+        `Jotform từ chối truy cập (${path}): submission không tồn tại hoặc không thuộc tài khoản, hoặc JOTFORM_API_KEY sai/thiếu quyền`,
       NOT_FOUND: (path: string) =>
         `Không tìm thấy dữ liệu trên Jotform (${path})`,
       RATE_LIMIT: (path: string) =>
@@ -263,9 +265,23 @@ export const FIELD = {
   START: 'start',
 } as const;
 
+const REQUIRED = (field: string) => `${field} là bắt buộc`;
+const MUST_BE_STRING = (field: string) => `${field} phải là chuỗi`;
+
 export const VALIDATION = {
-  REQUIRED: (field: string) => `${field} là bắt buộc`,
-  MUST_BE_STRING: (field: string) => `${field} phải là chuỗi`,
+  REQUIRED,
+  MUST_BE_STRING,
+  /**
+   * Cho trường chuỗi bắt buộc: thiếu trường thì "là bắt buộc", có nhưng sai
+   * kiểu (ví dụ số) thì "phải là chuỗi". class-validator gọi hàm này với giá
+   * trị đang kiểm tra.
+   */
+  REQUIRED_STRING:
+    (field: string) =>
+    ({ value }: { value: unknown }) =>
+      value === undefined || value === null
+        ? REQUIRED(field)
+        : MUST_BE_STRING(field),
   MUST_BE_INTEGER: (field: string) => `${field} phải là số nguyên`,
   NOT_NEGATIVE: (field: string) => `${field} không được âm`,
   MAX_LENGTH: (field: string, max: number) => `${field} tối đa ${max} ký tự`,
