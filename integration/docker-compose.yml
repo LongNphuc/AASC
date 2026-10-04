@@ -1,0 +1,24 @@
+services:
+  integration:
+    build: .
+    image: aasc-integration
+    env_file: .env
+    environment:
+      # Trong container luôn chạy cổng 3000; cổng ngoài lấy theo PORT trong .env.
+      PORT: 3000
+      DATABASE_PATH: /app/data/app.sqlite
+      LOG_DIR: /app/logs
+    ports:
+      - '${PORT:-3000}:3000'
+    volumes:
+      # Giữ token Bitrix24, lịch sử submission và log khi tạo lại container.
+      # Dùng named volume thay vì gắn thư mục ./data, ./logs: Docker tạo volume
+      # với quyền của user node trong image, nên chạy được ngay sau khi clone.
+      # (Thư mục gắn vào mà chưa tồn tại sẽ bị tạo với chủ root, app không ghi được.)
+      - aasc-data:/app/data
+      - aasc-logs:/app/logs
+    restart: unless-stopped
+
+volumes:
+  aasc-data:
+  aasc-logs:
