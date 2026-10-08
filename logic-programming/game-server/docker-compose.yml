@@ -1,0 +1,24 @@
+services:
+  game-server:
+    build: .
+    image: aasc-game-server
+    # .env không bắt buộc: mọi biến đều có giá trị mặc định.
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # Trong container luôn chạy cổng 3001; cổng ngoài lấy theo PORT.
+      PORT: 3001
+      DATABASE_PATH: /app/data/game.sqlite
+      LOG_DIR: /app/logs
+    ports:
+      - '${PORT:-3001}:3001'
+    volumes:
+      # Giữ tài khoản, ván chơi, lịch sử trận và log khi tạo lại container.
+      - game-data:/app/data
+      - game-logs:/app/logs
+    restart: unless-stopped
+
+volumes:
+  game-data:
+  game-logs:

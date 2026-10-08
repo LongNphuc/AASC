@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Game Server: Line 98 và Cờ caro</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <header>
+      <strong>Game Server</strong>
+      <nav id="nav" class="hidden">
+        <a href="/line98.html">Line 98</a>
+        <a href="/caro.html">Cờ caro</a>
+        <a href="#" id="logout">Đăng xuất</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Chưa đăng nhập: đăng nhập hoặc đăng ký -->
+      <section id="auth" class="card hidden" style="max-width: 420px">
+        <div class="tabs actions">
+          <button id="tab-login" class="active">Đăng nhập</button>
+          <button id="tab-register">Đăng ký</button>
+        </div>
+
+        <form id="login-form">
+          <label for="login-username">Tên đăng nhập</label>
+          <input id="login-username" autocomplete="username" required />
+          <label for="login-password">Mật khẩu</label>
+          <input
+            id="login-password"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
+          <div class="actions"><button type="submit">Đăng nhập</button></div>
+        </form>
+
+        <form id="register-form" class="hidden">
+          <label for="reg-username"
+            >Tên đăng nhập (3-20 ký tự: chữ không dấu, số, _)</label
+          >
+          <input id="reg-username" autocomplete="username" required />
+          <label for="reg-password">Mật khẩu (ít nhất 6 ký tự)</label>
+          <input
+            id="reg-password"
+            type="password"
+            autocomplete="new-password"
+            required
+          />
+          <label for="reg-nickname">Nickname (không bắt buộc)</label>
+          <input id="reg-nickname" />
+          <label for="reg-email">Email (không bắt buộc)</label>
+          <input id="reg-email" type="email" />
+          <div class="actions"><button type="submit">Đăng ký</button></div>
+        </form>
+        <div id="auth-message" class="message"></div>
+      </section>
+
+      <!-- Đã đăng nhập: sảnh chờ và thông tin cá nhân -->
+      <section id="lobby" class="hidden">
+        <div class="card">
+          <h1>Xin chào, <span id="hello-name"></span></h1>
+          <p class="games">
+            Chọn trò chơi:
+            <a href="/line98.html">▶ Line 98</a>
+            <a href="/caro.html">▶ Cờ caro X O (2 người)</a>
+          </p>
+        </div>
+
+        <form id="profile-form" class="card" style="max-width: 420px">
+          <h2>Thông tin cá nhân</h2>
+          <label>Tên đăng nhập</label>
+          <input id="profile-username" disabled />
+          <label for="profile-nickname">Nickname</label>
+          <input id="profile-nickname" />
+          <label for="profile-email">Email</label>
+          <input id="profile-email" type="email" />
+          <div class="actions"><button type="submit">Lưu thay đổi</button></div>
+          <div id="profile-message" class="message"></div>
+        </form>
+      </section>
+    </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/lobby.js"></script>
+  </body>
+</html>

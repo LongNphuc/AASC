@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Line 98</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <header>
+      <strong>Line 98</strong>
+      <nav>
+        <a href="/">Sảnh</a>
+        <a href="/caro.html">Cờ caro</a>
+        <a href="#" id="logout">Đăng xuất</a>
+      </nav>
+    </header>
+    <main>
+      <div class="row">
+        <div class="card">
+          <canvas id="board" width="450" height="450"></canvas>
+        </div>
+        <div class="card side">
+          <div>Điểm</div>
+          <div id="score" class="stat">0</div>
+          <div style="margin-top: 12px">Bóng tiếp theo</div>
+          <div id="next" class="next-balls"></div>
+          <div class="actions">
+            <button id="hint">Gợi ý</button>
+            <button id="new-game" class="secondary">Ván mới</button>
+          </div>
+          <div id="message" class="message"></div>
+          <p style="font-size: 13px; color: var(--muted)">
+            Chọn một bóng (bóng sẽ phóng to), rồi chọn ô trống để di chuyển.
+            Bóng chỉ đi được khi có đường qua các ô trống. Xếp từ 5 bóng cùng
+            màu thẳng hàng (ngang, dọc, chéo) để ghi điểm. Đi mà không xóa được
+            hàng thì xuất hiện thêm 3 bóng. Kín bàn là thua.
+          </p>
+        </div>
+      </div>
+    </main>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/line98.js"></script>
+  </body>
+</html>

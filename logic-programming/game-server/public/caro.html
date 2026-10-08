@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cờ caro X O</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <header>
+      <strong>Cờ caro X O</strong>
+      <nav>
+        <a href="/">Sảnh</a>
+        <a href="/line98.html">Line 98</a>
+        <a href="#" id="logout">Đăng xuất</a>
+      </nav>
+    </header>
+    <main>
+      <div class="row">
+        <div class="card">
+          <canvas id="board" width="540" height="540"></canvas>
+        </div>
+        <div class="card side">
+          <div id="status" class="stat" style="font-size: 20px">
+            Chưa vào trận
+          </div>
+          <div id="detail" style="margin-top: 6px; color: var(--muted)"></div>
+          <div class="actions">
+            <button id="find">Tìm trận</button>
+            <button id="cancel" class="secondary hidden">Hủy chờ</button>
+            <button id="leave" class="secondary hidden">Rời trận</button>
+          </div>
+          <div id="message" class="message"></div>
+          <p style="font-size: 13px; color: var(--muted)">
+            Bấm "Tìm trận" để được ghép ngẫu nhiên với một người đang chờ. X đi
+            trước. Ai có 5 quân liên tiếp (ngang, dọc, chéo) trước thì thắng.
+            Đang chơi mà rời trận là xử thua: chuyển sang trang khác thì được
+            hỏi lại; tải lại trang, đóng trình duyệt hoặc mất kết nối thì xử
+            thua ngay. Muốn tự chơi thử: mở thêm một trình duyệt ẩn danh, đăng
+            nhập tài khoản khác.
+          </p>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Lịch sử trận đấu</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Thời gian</th>
+              <th>Bạn</th>
+              <th>Đối thủ</th>
+              <th>Kết quả</th>
+              <th>Số nước</th>
+            </tr>
+          </thead>
+          <tbody id="history"></tbody>
+        </table>
+      </div>
+    </main>
+    <div
+      id="leave-dialog"
+      class="dialog hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="leave-title"
+    >
+      <div class="dialog-box">
+        <h2 id="leave-title">Bạn muốn rời trận?</h2>
+        <p>
+          Trận đang diễn ra. Rời trận bây giờ bạn sẽ bị xử thua, đối thủ thắng.
+        </p>
+        <div class="actions">
+          <button id="leave-yes" class="danger">Có, rời trận</button>
+          <button id="leave-no" class="secondary">Không, chơi tiếp</button>
+        </div>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/caro.js"></script>
+  </body>
+</html>

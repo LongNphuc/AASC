@@ -1,0 +1,15 @@
+{
+  "name": "aasc-fibonacci",
+  "version": "1.0.0",
+  "description": "AASC File 3 bài 2: tính số Fibonacci thứ 50 bằng quy hoạch động và BigInt",
+  "private": true,
+  "license": "UNLICENSED",
+  "main": "src/fibonacci.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test",
+    "bench": "node src/benchmark.js"
+  }
+}
