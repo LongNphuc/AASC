@@ -1,0 +1,11 @@
+node_modules
+dist
+coverage
+data
+logs
+.env
+.env.*
+*.log
+test
+scripts
+knowledge-about-nestjs
